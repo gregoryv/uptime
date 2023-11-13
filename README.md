@@ -8,7 +8,7 @@ provides an easy textual representation of long durations.
 
 Example
 
-    d := Between(
+    d := uptime.Between(
             time.Date(2021, 1, 01, 12, 00, 00, 0, time.UTC),
             time.Date(2022, 3, 02, 13, 10, 20, 0, time.UTC),
     )
