@@ -103,8 +103,8 @@ func Between(a, b time.Time) *Duration {
 
 const day = time.Hour * 24
 
-// Duration represents elapsed time split into named parts. The
-// duration is the total of all fields combined.
+// Duration represents long duration. The duration is the total of all
+// fields combined.
 type Duration struct {
 	Years   int
 	Months  int
