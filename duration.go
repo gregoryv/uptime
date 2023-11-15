@@ -20,6 +20,9 @@ func Between(a, b time.Time) *Duration {
 	if b.Before(a) {
 		a, b = b, a
 	}
+	if a.Equal(b) {
+		return &Duration{}
+	}
 	var years, months, days int
 	tmp := a
 	aDay := a.Day()
