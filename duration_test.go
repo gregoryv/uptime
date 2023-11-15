@@ -47,7 +47,7 @@ func ExampleApproximate_january() {
 
 func ExampleApproximate() {
 	d := Approximate(
-		time.Date(2022, 3, 10, 12, 00, 00, 0, time.UTC),		
+		time.Date(2022, 3, 10, 12, 00, 00, 0, time.UTC),
 		time.Date(2022, 1, 30, 12, 01, 00, 0, time.UTC),
 	)
 	fmt.Println(d)
