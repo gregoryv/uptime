@@ -14,26 +14,34 @@ func Between(a, b time.Time) *Duration {
 	}
 	var years, months, days int
 	tmp := a
+	aDay := a.Day()
 	i := int(b.Sub(a).Truncate(day) / day)
 	for {
-		last := tmp.Day()
 		next := tmp.Add(day)
 		d := next.Day()
-		i--		
+		i--
 		days++
-		if a.Day() == d || d == 1 && days > 28 {
+
+		if aDay == d || d == 1 && days > 28 {
 			months++
-			days -= last
-			//fmt.Println(years, months, days)
+			// remove number of days of passed month
+			days -= tmp.Day()
 			if months == 12 {
 				years++
 				months = 0
+			}
+
+			// skip ahead if there are enough days
+			if v := 27; i > v {
+				i -= v
+				days += v
+				next = next.Add(time.Duration(v) * day)
 			}
 		}
 		tmp = next
 		if i == 0 {
 			break
-		}		
+		}
 	}
 	d := &Duration{
 		Years:  years,
