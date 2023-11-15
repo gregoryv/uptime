@@ -6,43 +6,6 @@ import (
 	"time"
 )
 
-// Approximate returns the duration between a and b. Any year is
-// considered to be 365 days, any month is 30 days. This method is
-// faster though not as accurate.
-func Approximate(a, b time.Time) *Duration {
-	// a should always come before b
-	if b.Before(a) {
-		a, b = b, a
-	}
-	s := b.Sub(a)
-	var d Duration
-	// years
-	year := 365 * day
-	years := s.Truncate(year) / year
-	d.Years = int(years)
-	s -= years * year
-
-	// months
-	month := 30 * day
-	months := s.Truncate(month) / month
-	d.Months = int(months)
-	s -= months * month
-
-	// days
-	days := s.Truncate(day) / day
-	d.Days = int(days)
-	s -= days * day
-
-	// hours
-	h := s.Truncate(time.Hour).Hours()
-	d.Hours = int(h)
-	m := time.Duration(s - s.Truncate(time.Hour)).Minutes()
-	d.Minutes = int(m)
-	sec := time.Duration(s - s.Truncate(time.Minute)).Seconds()
-	d.Seconds = int(sec)
-	return &d
-}
-
 // Between returns the absolute duration between a and b.
 func Between(a, b time.Time) *Duration {
 	// a should always come before b
