@@ -34,3 +34,23 @@ func ExampleBetween_january() {
 	// output:
 	// 1 month 11 days
 }
+
+func ExampleApproximate_january() {
+	d := Approximate(
+		time.Date(2022, 1, 30, 12, 00, 00, 0, time.UTC),
+		time.Date(2022, 3, 10, 12, 00, 00, 0, time.UTC),
+	)
+	fmt.Println(d)
+	// output:
+	// 1 month 9 days
+}
+
+func ExampleApproximate() {
+	d := Approximate(
+		time.Date(2022, 3, 10, 12, 00, 00, 0, time.UTC),		
+		time.Date(2022, 1, 30, 12, 01, 00, 0, time.UTC),
+	)
+	fmt.Println(d)
+	// output:
+	// 1 month 8 days 23 hours 59 minutes
+}
