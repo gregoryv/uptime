@@ -42,6 +42,20 @@ func TestBetween(t *testing.T) {
 			s: "1y1m0d 0h0m0s",
 			l: "1 year 1 month",
 		},
+		{
+			t: "jan to march",
+			a: "2022-01-30 12:00:00",
+			b: "2022-03-10 12:00:00",
+			s: "0y1m11d 0h0m0s",
+			l: "1 month 11 days",
+		},
+		{
+			t: "thousand years",
+			a: "1022-01-01 12:00:00",
+			b: "2022-01-01 12:00:00",
+			s: "1000y0m0d 0h0m0s",
+			l: "1000 years",
+		},
 	}
 	for _, c := range cases {
 		t.Run(c.t, func(t *testing.T) {
@@ -56,7 +70,7 @@ func TestBetween(t *testing.T) {
 			dur := Between(a, b)
 			if got := dur.Short(); got != c.s {
 				t.Log("got", got)
-				t.Error("exp", c.s)
+				t.Fatal("exp", c.s)
 			}
 			if got := dur.String(); got != c.l {
 				t.Log("got", got)
