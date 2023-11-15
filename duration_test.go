@@ -2,17 +2,23 @@ package uptime
 
 import (
 	"fmt"
+	"io/ioutil"
+	"log"
+	"os"
 	"testing"
 	"time"
 )
 
 func TestBetween(t *testing.T) {
+	log.SetFlags(0)
+	defer log.SetOutput(ioutil.Discard)
 	cases := []struct {
-		t string // text description
-		a string
-		b string
-		s string // short
-		l string // long
+		t     string // text description
+		a     string
+		b     string
+		s     string // short
+		l     string // long
+		debug bool
 	}{
 		{
 			t: "zero",
@@ -56,6 +62,20 @@ func TestBetween(t *testing.T) {
 			s: "1000y0m0d 0h0m0s",
 			l: "1000 years",
 		},
+		{
+			t: "middle of month",
+			a: "2022-01-15 12:00:00",
+			b: "2022-03-15 12:00:00",
+			s: "0y2m0d 0h0m0s",
+			l: "2 months",
+		},
+		{
+			t: "middle of month",
+			a: "2022-01-15 12:00:00",
+			b: "2022-03-14 12:00:00",
+			s: "0y1m27d 0h0m0s",
+			l: "1 month 27 days",
+		},
 	}
 	for _, c := range cases {
 		t.Run(c.t, func(t *testing.T) {
@@ -67,6 +87,10 @@ func TestBetween(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
+			log.SetOutput(ioutil.Discard)
+			if c.debug {
+				log.SetOutput(os.Stderr)
+			}
 			dur := Between(a, b)
 			if got := dur.Short(); got != c.s {
 				t.Log("got", got)
@@ -74,7 +98,7 @@ func TestBetween(t *testing.T) {
 			}
 			if got := dur.String(); got != c.l {
 				t.Log("got", got)
-				t.Error("exp", c.l)
+				t.Fatal("exp", c.l)
 			}
 		})
 	}
