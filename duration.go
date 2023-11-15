@@ -1,3 +1,11 @@
+/*
+Package uptime calculates long durations.
+
+This package solves two problems;
+
+  - overcomes the limitation of [time.Duration], approximately 290 years.
+  - format readable [Duration]
+*/
 package uptime
 
 import (
