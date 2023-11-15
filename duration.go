@@ -14,6 +14,12 @@ import (
 	"time"
 )
 
+func NewDuration(d time.Duration) *Duration {
+	b := time.Now()
+	a := b.Add(-d)
+	return Between(a, b)
+}
+
 // Between returns the absolute duration between a and b.
 func Between(a, b time.Time) *Duration {
 	// a should always come before b

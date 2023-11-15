@@ -104,6 +104,12 @@ func TestBetween(t *testing.T) {
 	}
 }
 
+func ExampleNewDuration() {
+	fmt.Print(NewDuration(364 * 24 * time.Hour))
+	// output:
+	// 11 months 30 days
+}
+
 func ExampleDuration_Short() {
 	a := time.Date(2021, 1, 01, 12, 00, 00, 0, time.UTC)
 	b := time.Date(2022, 3, 02, 13, 10, 20, 0, time.UTC)
