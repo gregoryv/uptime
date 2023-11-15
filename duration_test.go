@@ -27,12 +27,12 @@ func ExampleDuration_String() {
 
 func Example_longDurationBetween() {
 	a := time.Date(1021, 1, 01, 12, 00, 00, 0, time.UTC)
-	b := time.Date(2022, 1, 01, 12, 00, 00, 0, time.UTC)
+	b := time.Date(2022, 3, 07, 16, 00, 00, 0, time.UTC)
 	fmt.Print(a, "\n", b, "\n", Between(a, b))
 	// output:
 	// 1021-01-01 12:00:00 +0000 UTC
-	// 2022-01-01 12:00:00 +0000 UTC
-	// 1001 years
+	// 2022-03-07 16:00:00 +0000 UTC
+	// 1001 years 2 months 6 days 4 hours
 }
 
 func ExampleBetween_january() {
