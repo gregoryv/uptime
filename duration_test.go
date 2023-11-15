@@ -2,7 +2,6 @@ package uptime
 
 import (
 	"fmt"
-	"testing"
 	"time"
 )
 
@@ -34,12 +33,4 @@ func ExampleBetween_january() {
 	fmt.Println(d)
 	// output:
 	// 1 month 11 days
-}
-
-func Benchmark_Between(b *testing.B) {
-	start := time.Date(2021, 11, 6, 11, 34, 13, 0, time.UTC)
-	now := time.Date(2023, 3, 19, 11, 34, 13, 0, time.UTC)
-	for i := 0; i < b.N; i++ {
-		Between(start, now)
-	}
 }
