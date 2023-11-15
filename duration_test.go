@@ -26,12 +26,12 @@ func ExampleDuration_String() {
 }
 
 func ExampleBetween() {
-	a := time.Date(1022, 1, 01, 12, 00, 00, 0, time.UTC)
-	b := time.Date(2021, 1, 01, 12, 00, 00, 0, time.UTC)
+	a := time.Date(1021, 1, 01, 12, 00, 00, 0, time.UTC)
+	b := time.Date(2022, 1, 01, 12, 00, 00, 0, time.UTC)
 	fmt.Print(a, "\n", b, "\n", Between(a, b))
 	// output:
-	// 1022-01-01 12:00:00 +0000 UTC
-	// 2021-01-01 12:00:00 +0000 UTC
+	// 1021-01-01 12:00:00 +0000 UTC
+	// 2022-01-01 12:00:00 +0000 UTC
 	// 1001 years
 }
 

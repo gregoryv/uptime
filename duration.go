@@ -52,34 +52,40 @@ func Between(a, b time.Time) *Duration {
 	var years, months, days int
 	tmp := a
 	aDay := a.Day()
-	i := int(b.Sub(a).Truncate(day) / day)
-	for {
-		next := tmp.Add(day)
-		d := next.Day()
-		i--
-		days++
+	chunk := func(i int) {
+		for {
+			next := tmp.Add(day)
+			d := next.Day()
+			i--
+			days++
 
-		if aDay == d || d == 1 && days > 28 {
-			months++
-			// remove number of days of passed month
-			days -= tmp.Day()
-			if months == 12 {
-				years++
-				months = 0
-			}
+			if aDay == d || d == 1 && days > 28 {
+				months++
+				// remove number of days of passed month
+				days -= tmp.Day()
+				if months == 12 {
+					years++
+					months = 0
+				}
 
-			// skip ahead if there are enough days
-			if v := 27; i > v {
-				i -= v
-				days += v
-				next = next.Add(time.Duration(v) * day)
+				// skip ahead if there are enough days
+				if v := 27; i > v {
+					i -= v
+					days += v
+					next = next.Add(time.Duration(v) * day)
+				}
 			}
-		}
-		tmp = next
-		if i == 0 {
-			break
+			tmp = next
+			if i == 0 {
+				break
+			}
 		}
 	}
+	for j := a.Year(); j < b.Year()-100; j++ {
+		chunk(365)
+	}
+	i := int(b.Sub(tmp).Truncate(day) / day)
+	chunk(i)
 	d := &Duration{
 		Years:  years,
 		Months: months,
