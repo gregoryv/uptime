@@ -14,7 +14,7 @@ func init() {
 	log.SetOutput(ioutil.Discard)
 }
 
-func TestDuration_Add(t *testing.T) {
+func TestDuration_add(t *testing.T) {
 	cases := []struct {
 		t string // text
 		a string // time
@@ -35,7 +35,7 @@ func TestDuration_Add(t *testing.T) {
 			}
 			Y, M, _ := a.Date()
 			d := untilNewYear(a)
-			d.Add(sinceNewYear(a), cal.Days(Y, M))
+			d.add(sinceNewYear(a), cal.Days(Y, M))
 			got := d.String()
 			if got != c.e {
 				t.Log("got", got)

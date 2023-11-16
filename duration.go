@@ -27,7 +27,7 @@ func Between(a, b time.Time) *Duration {
 	if years := b.Year() - a.Year(); years > 0 {
 		dur := untilNewYear(a)
 		Y, M, _ := a.Date()
-		dur.Add(sinceNewYear(b), cal.Days(Y, M))
+		dur.add(sinceNewYear(b), cal.Days(Y, M))
 		dur.Years += years - 1
 		return dur
 	}
@@ -125,7 +125,7 @@ func (d *Duration) setHourMinSec(s time.Duration) {
 	d.Seconds = int(sec)
 }
 
-func (d *Duration) Add(v *Duration, monthDays int) {
+func (d *Duration) add(v *Duration, monthDays int) {
 	d.Years += v.Years
 	d.Months += v.Months
 	d.Days += v.Days
