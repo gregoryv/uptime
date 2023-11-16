@@ -95,6 +95,21 @@ func Before(t time.Time, cal *Calendar) *Duration {
 	return dur
 }
 
+// After returns duration since new years
+func After(t time.Time, cal *Calendar) *Duration {
+	_, m, d := t.Date()
+	dur := &Duration{
+		Months: int(m) - 1,
+		Days:   d - 1,
+	}
+	h, mm, s := t.Clock()
+	hms := time.Duration(h)*time.Hour +
+		time.Duration(mm)*time.Minute +
+		time.Duration(s)*time.Second
+	dur.setHourMinSec(hms)
+	return dur
+}
+
 // Duration represents long duration. The duration is the total of all
 // fields combined.
 type Duration struct {

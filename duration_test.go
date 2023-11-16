@@ -38,6 +38,35 @@ func TestBefore(t *testing.T) {
 	}
 }
 
+func TestAfter(t *testing.T) {
+	cases := []struct {
+		t string // text
+		a string // time
+		e string // expected
+	}{
+		{
+			t: "less than a year",
+			a: "2023-11-16 22:32:44",
+			e: "10 months 15 days 22 hours 32 minutes 44 seconds",
+		},
+	}
+	cal := NewCalendar()
+
+	for _, c := range cases {
+		t.Run(c.t, func(t *testing.T) {
+			a, err := time.Parse("2006-01-02 15:04:05", c.a)
+			if err != nil {
+				t.Fatal(err)
+			}
+			got := After(a, cal).String()
+			if got != c.e {
+				t.Log("got", got)
+				t.Fatal("exp", c.e)
+			}
+		})
+	}
+}
+
 func TestBetween(t *testing.T) {
 	log.SetFlags(0)
 	defer log.SetOutput(ioutil.Discard)
