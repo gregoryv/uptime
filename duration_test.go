@@ -21,7 +21,6 @@ func TestDuration_Add(t *testing.T) {
 			e: "1 year",
 		},
 	}
-	cal := NewCalendar()
 
 	for _, c := range cases {
 		t.Run(c.t, func(t *testing.T) {
@@ -30,8 +29,8 @@ func TestDuration_Add(t *testing.T) {
 				t.Fatal(err)
 			}
 			Y, M, _ := a.Date()
-			d := Before(a, cal)
-			d.Add(After(a, cal), cal.Days(Y, M))
+			d := Before(a)
+			d.Add(After(a), cal.Days(Y, M))
 			got := d.String()
 			if got != c.e {
 				t.Log("got", got)
@@ -53,7 +52,6 @@ func TestBefore(t *testing.T) {
 			e: "1 month 14 days 1 hour 27 minutes 16 seconds",
 		},
 	}
-	cal := NewCalendar()
 
 	for _, c := range cases {
 		t.Run(c.t, func(t *testing.T) {
@@ -61,7 +59,7 @@ func TestBefore(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			got := Before(a, cal).String()
+			got := Before(a).String()
 			if got != c.e {
 				t.Log("got", got)
 				t.Fatal("exp", c.e)
@@ -82,7 +80,6 @@ func TestAfter(t *testing.T) {
 			e: "10 months 15 days 22 hours 32 minutes 44 seconds",
 		},
 	}
-	cal := NewCalendar()
 
 	for _, c := range cases {
 		t.Run(c.t, func(t *testing.T) {
@@ -90,7 +87,7 @@ func TestAfter(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			got := After(a, cal).String()
+			got := After(a).String()
 			if got != c.e {
 				t.Log("got", got)
 				t.Fatal("exp", c.e)

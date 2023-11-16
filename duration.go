@@ -29,6 +29,7 @@ func Between(a, b time.Time) *Duration {
 	if a.Equal(b) {
 		return &Duration{}
 	}
+
 	var years, months, days int
 	tmp := a
 	aDay := a.Day()
@@ -79,8 +80,10 @@ func Between(a, b time.Time) *Duration {
 
 const day = time.Hour * 24
 
+var cal = NewCalendar()
+
 // Before returns duration before new years
-func Before(t time.Time, cal *Calendar) *Duration {
+func Before(t time.Time) *Duration {
 	y, m, d := t.Date()
 	dur := &Duration{
 		Months: 12 - int(m),
@@ -96,7 +99,7 @@ func Before(t time.Time, cal *Calendar) *Duration {
 }
 
 // After returns duration since new years
-func After(t time.Time, cal *Calendar) *Duration {
+func After(t time.Time) *Duration {
 	_, m, d := t.Date()
 	dur := &Duration{
 		Months: int(m) - 1,
