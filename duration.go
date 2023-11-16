@@ -73,16 +73,27 @@ func Between(a, b time.Time) *Duration {
 		Days:   days,
 	}
 	s := b.Sub(tmp)
-	h := s.Truncate(time.Hour).Hours()
-	d.Hours = int(h)
-	m := time.Duration(s - s.Truncate(time.Hour)).Minutes()
-	d.Minutes = int(m)
-	sec := time.Duration(s - s.Truncate(time.Minute)).Seconds()
-	d.Seconds = int(sec)
+	d.setHourMinSec(s)
 	return d
 }
 
 const day = time.Hour * 24
+
+// Before returns duration before new years
+func Before(t time.Time, cal *Calendar) *Duration {
+	y, m, d := t.Date()
+	dur := &Duration{
+		Months: 12 - int(m),
+		Days:   cal.Days(y, m) - d,
+	}
+	h, mm, s := t.Clock()
+	hms := 24*time.Hour -
+		time.Duration(h)*time.Hour -
+		time.Duration(mm)*time.Minute -
+		time.Duration(s)*time.Second
+	dur.setHourMinSec(hms)
+	return dur
+}
 
 // Duration represents long duration. The duration is the total of all
 // fields combined.
@@ -93,6 +104,15 @@ type Duration struct {
 	Hours   int
 	Minutes int
 	Seconds int
+}
+
+func (d *Duration) setHourMinSec(s time.Duration) {
+	h := s.Truncate(time.Hour).Hours()
+	d.Hours = int(h)
+	m := time.Duration(s - s.Truncate(time.Hour)).Minutes()
+	d.Minutes = int(m)
+	sec := time.Duration(s - s.Truncate(time.Minute)).Seconds()
+	d.Seconds = int(sec)
 }
 
 // Short returns an abbreviated duration representation.

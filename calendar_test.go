@@ -25,7 +25,7 @@ func TestCalendar_Day(t *testing.T) {
 			t: "happy nineties",
 			v: "1990-01",
 			e: 31,
-		},		
+		},
 	}
 	cal := NewCalendar()
 	for _, c := range cases {
