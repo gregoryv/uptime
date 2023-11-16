@@ -14,12 +14,6 @@ import (
 	"time"
 )
 
-func NewDuration(d time.Duration) *Duration {
-	b := time.Now()
-	a := b.Add(-d)
-	return Between(a, b)
-}
-
 // Between returns the absolute duration between a and b.
 func Between(a, b time.Time) *Duration {
 	// a should always come before b
@@ -30,44 +24,42 @@ func Between(a, b time.Time) *Duration {
 		return &Duration{}
 	}
 
+	if years := b.Year() - a.Year(); years > 0 {
+		dur := Before(a)
+		Y, M, _ := a.Date()
+		dur.Add(After(b), cal.Days(Y, M))
+		dur.Years += years - 1
+		return dur
+	}
+
+	// less than a year
 	var years, months, days int
 	tmp := a
 	aDay := a.Day()
 	var monthDays int
-	chunk := func(i int) {
-		for {
-			next := tmp.Add(day)
-			d := next.Day()
-			if d == 1 {
-				monthDays = tmp.Day()
-			}
-			i--
-			days++
+	i := int(b.Sub(tmp).Truncate(day) / day)
+	for {
+		next := tmp.Add(day)
+		d := next.Day()
+		if d == 1 {
+			monthDays = tmp.Day()
+		}
+		i--
+		days++
 
-			if aDay == d || d == 1 && days > 28 {
-				//log.Println("aDay", aDay, monthDays)
-				months++
-				// remove number of days of passed month
-				days -= monthDays
-				if months == 12 {
-					years++
-					months = 0
-				}
-
-			}
-			//log.Println("i", i, "days", days, "d", d)
-			tmp = next
-			if i == 0 {
-				break
-			}
+		if aDay == d || d == 1 && days > 28 {
+			//log.Println("aDay", aDay, monthDays)
+			months++
+			// remove number of days of passed month
+			days -= monthDays
+		}
+		//log.Println("i", i, "days", days, "d", d)
+		tmp = next
+		if i == 0 {
+			break
 		}
 	}
-	for j := a.Year(); j < b.Year()-2; j++ {
-		chunk(365)
-	}
-	// remaining days
-	i := int(b.Sub(tmp).Truncate(day) / day)
-	chunk(i)
+
 	d := &Duration{
 		Years:  years,
 		Months: months,

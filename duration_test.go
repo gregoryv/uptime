@@ -9,6 +9,11 @@ import (
 	"time"
 )
 
+func init() {
+	log.SetFlags(0)
+	log.SetOutput(ioutil.Discard)
+}
+
 func TestDuration_Add(t *testing.T) {
 	cases := []struct {
 		t string // text
@@ -97,15 +102,14 @@ func TestAfter(t *testing.T) {
 }
 
 func TestBetween(t *testing.T) {
-	log.SetFlags(0)
 	defer log.SetOutput(ioutil.Discard)
 	cases := []struct {
-		t     string // text description
-		a     string
-		b     string
-		s     string // short
-		l     string // long
-		debug bool
+		t string // text description
+		a string
+		b string
+		s string // short
+		l string // long
+		D bool   // debug
 	}{
 		{
 			t: "zero",
@@ -155,6 +159,7 @@ func TestBetween(t *testing.T) {
 			b: "2022-03-15 12:00:00",
 			s: "0y2m0d 0h0m0s",
 			l: "2 months",
+			D: true,
 		},
 		{
 			t: "middle of month",
@@ -175,7 +180,7 @@ func TestBetween(t *testing.T) {
 				t.Fatal(err)
 			}
 			log.SetOutput(ioutil.Discard)
-			if c.debug {
+			if c.D {
 				log.SetOutput(os.Stderr)
 			}
 			dur := Between(a, b)
@@ -189,12 +194,6 @@ func TestBetween(t *testing.T) {
 			}
 		})
 	}
-}
-
-func ExampleNewDuration() {
-	fmt.Print(NewDuration(364 * 24 * time.Hour))
-	// output:
-	// 11 months 30 days
 }
 
 func ExampleDuration_Short() {
