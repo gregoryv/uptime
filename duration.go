@@ -27,7 +27,7 @@ func Between(a, b time.Time) *Duration {
 	if years := b.Year() - a.Year(); years > 0 {
 		dur := untilNewYear(a)
 		Y, M, _ := a.Date()
-		dur.Add(After(b), cal.Days(Y, M))
+		dur.Add(sinceNewYear(b), cal.Days(Y, M))
 		dur.Years += years - 1
 		return dur
 	}
@@ -90,8 +90,8 @@ func untilNewYear(t time.Time) *Duration {
 	return dur
 }
 
-// After returns duration since new years
-func After(t time.Time) *Duration {
+// sinceNewYear returns duration since new years
+func sinceNewYear(t time.Time) *Duration {
 	_, m, d := t.Date()
 	dur := &Duration{
 		Months: int(m) - 1,

@@ -35,7 +35,7 @@ func TestDuration_Add(t *testing.T) {
 			}
 			Y, M, _ := a.Date()
 			d := untilNewYear(a)
-			d.Add(After(a), cal.Days(Y, M))
+			d.Add(sinceNewYear(a), cal.Days(Y, M))
 			got := d.String()
 			if got != c.e {
 				t.Log("got", got)
@@ -73,7 +73,7 @@ func TestuntilNewYear(t *testing.T) {
 	}
 }
 
-func TestAfter(t *testing.T) {
+func TestsinceNewYear(t *testing.T) {
 	cases := []struct {
 		t string // text
 		a string // time
@@ -92,7 +92,7 @@ func TestAfter(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			got := After(a).String()
+			got := sinceNewYear(a).String()
 			if got != c.e {
 				t.Log("got", got)
 				t.Fatal("exp", c.e)
