@@ -25,7 +25,7 @@ func Between(a, b time.Time) *Duration {
 	}
 
 	if years := b.Year() - a.Year(); years > 0 {
-		dur := Before(a)
+		dur := untilNewYear(a)
 		Y, M, _ := a.Date()
 		dur.Add(After(b), cal.Days(Y, M))
 		dur.Years += years - 1
@@ -74,8 +74,8 @@ const day = time.Hour * 24
 
 var cal = NewCalendar()
 
-// Before returns duration before new years
-func Before(t time.Time) *Duration {
+// untilNewYear returns duration before new years
+func untilNewYear(t time.Time) *Duration {
 	y, m, d := t.Date()
 	dur := &Duration{
 		Months: 12 - int(m),
