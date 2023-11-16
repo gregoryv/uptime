@@ -130,6 +130,36 @@ func (d *Duration) setHourMinSec(s time.Duration) {
 	d.Seconds = int(sec)
 }
 
+func (d *Duration) Add(v *Duration, monthDays int) {
+	d.Years += v.Years
+	d.Months += v.Months
+	d.Days += v.Days
+	d.Hours += v.Hours
+	d.Minutes += v.Minutes
+	d.Seconds += v.Seconds
+
+	if d.Seconds > 59 {
+		d.Minutes++
+		d.Seconds -= 60
+	}
+	if d.Minutes > 59 {
+		d.Hours++
+		d.Minutes -= 60
+	}
+	if d.Hours > 23 {
+		d.Days++
+		d.Hours -= 24
+	}
+	if d.Days >= monthDays {
+		d.Months++
+		d.Days -= monthDays
+	}
+	if d.Months > 11 {
+		d.Years++
+		d.Months -= 12
+	}
+}
+
 // Short returns an abbreviated duration representation.
 func (d *Duration) Short() string {
 	return fmt.Sprintf("%vy%vm%vd %vh%vm%vs",

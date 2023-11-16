@@ -9,6 +9,38 @@ import (
 	"time"
 )
 
+func TestDuration_Add(t *testing.T) {
+	cases := []struct {
+		t string // text
+		a string // time
+		e string // expected
+	}{
+		{
+			t: "less than a year",
+			a: "2023-11-16 22:32:44",
+			e: "1 year",
+		},
+	}
+	cal := NewCalendar()
+
+	for _, c := range cases {
+		t.Run(c.t, func(t *testing.T) {
+			a, err := time.Parse("2006-01-02 15:04:05", c.a)
+			if err != nil {
+				t.Fatal(err)
+			}
+			Y, M, _ := a.Date()
+			d := Before(a, cal)
+			d.Add(After(a, cal), cal.Days(Y, M))
+			got := d.String()
+			if got != c.e {
+				t.Log("got", got)
+				t.Fatal("exp", c.e)
+			}
+		})
+	}
+}
+
 func TestBefore(t *testing.T) {
 	cases := []struct {
 		t string // text
