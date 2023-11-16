@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"strings"
 	"testing"
 	"time"
 )
@@ -12,6 +13,14 @@ import (
 func init() {
 	log.SetFlags(0)
 	log.SetOutput(ioutil.Discard)
+}
+
+func TestSince(t *testing.T) {
+	d := Since(time.Now())
+	got := d.String()
+	if !strings.Contains(got, "") {
+		t.Fail()
+	}
 }
 
 func TestDuration_add(t *testing.T) {

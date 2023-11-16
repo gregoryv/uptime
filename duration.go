@@ -14,12 +14,19 @@ import (
 	"time"
 )
 
+// Since returns the duration between a and now.
+func Since(a time.Time) *Duration {
+	return Between(a, time.Now())
+}
+
 // Between returns the absolute duration between a and b.
 func Between(a, b time.Time) *Duration {
 	// a should always come before b
 	if b.Before(a) {
 		a, b = b, a
 	}
+	a = a.Truncate(time.Second)
+	b = b.Truncate(time.Second)
 	if a.Equal(b) {
 		return &Duration{}
 	}
