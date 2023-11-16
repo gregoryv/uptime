@@ -72,7 +72,7 @@ func Between(a, b time.Time) *Duration {
 
 const day = time.Hour * 24
 
-var cal = NewCalendar()
+var cal = newCalendar()
 
 // untilNewYear returns duration before new years
 func untilNewYear(t time.Time) *Duration {

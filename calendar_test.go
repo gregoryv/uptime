@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-func TestCalendar_Day(t *testing.T) {
+func Test_calendar_Day(t *testing.T) {
 	cases := []struct {
 		t string
 		v string // yyyy-mm
@@ -27,7 +27,7 @@ func TestCalendar_Day(t *testing.T) {
 			e: 31,
 		},
 	}
-	cal := NewCalendar()
+	cal := newCalendar()
 	for _, c := range cases {
 		t.Run(c.t, func(t *testing.T) {
 			a, err := time.Parse("2006-01", c.v)

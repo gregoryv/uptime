@@ -2,21 +2,21 @@ package uptime
 
 import "time"
 
-func NewCalendar() *Calendar {
-	return &Calendar{
+func newCalendar() *calendar {
+	return &calendar{
 		cache: make(map[int]map[time.Month]int),
 	}
 }
 
-type Calendar struct {
+type calendar struct {
 	cache map[int]map[time.Month]int
 }
 
-func (c *Calendar) Days(year int, m time.Month) int {
+func (c *calendar) Days(year int, m time.Month) int {
 	return c.calc(year)[m]
 }
 
-func (c *Calendar) calc(year int) map[time.Month]int {
+func (c *calendar) calc(year int) map[time.Month]int {
 	if v, found := c.cache[year]; found {
 		return v
 	}
