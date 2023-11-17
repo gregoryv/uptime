@@ -86,7 +86,7 @@ func untilNewYear(t time.Time) *Duration {
 		Months: 12 - int(m),
 		Days:   daysInMonth(y, m) - d,
 	}
-	h, mm, s := t.Clock()
+	h, mm, s := t.Clock()	
 	hms := 24*time.Hour -
 		time.Duration(h)*time.Hour -
 		time.Duration(mm)*time.Minute -
@@ -98,16 +98,14 @@ func untilNewYear(t time.Time) *Duration {
 // sinceNewYear returns duration since new years
 func sinceNewYear(t time.Time) *Duration {
 	_, m, d := t.Date()
-	dur := &Duration{
-		Months: int(m) - 1,
-		Days:   d - 1,
-	}
 	h, mm, s := t.Clock()
-	hms := time.Duration(h)*time.Hour +
-		time.Duration(mm)*time.Minute +
-		time.Duration(s)*time.Second
-	dur.setHourMinSec(hms)
-	return dur
+	return &Duration{
+		Months:  int(m) - 1,
+		Days:    d - 1,
+		Hours:   h,
+		Minutes: mm,
+		Seconds: s,
+	}
 }
 
 // Duration represents long duration. The duration is the total of all
