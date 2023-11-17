@@ -34,7 +34,7 @@ func Between(a, b time.Time) *Duration {
 	if years := b.Year() - a.Year(); years > 0 {
 		dur := untilNewYear(a)
 		Y, M, _ := a.Date()
-		dur.add(sinceNewYear(b), cal.Days(Y, M))
+		dur.add(sinceNewYear(b), daysInMonth(Y, M))
 		dur.Years += years - 1
 		return dur
 	}
@@ -79,14 +79,12 @@ func Between(a, b time.Time) *Duration {
 
 const day = time.Hour * 24
 
-var cal = newCalendar()
-
 // untilNewYear returns duration before new years
 func untilNewYear(t time.Time) *Duration {
 	y, m, d := t.Date()
 	dur := &Duration{
 		Months: 12 - int(m),
-		Days:   cal.Days(y, m) - d,
+		Days:   daysInMonth(y, m) - d,
 	}
 	h, mm, s := t.Clock()
 	hms := 24*time.Hour -
@@ -204,4 +202,19 @@ func plural(v int, txt string) string {
 		return fmt.Sprintf("%v %s", v, txt)
 	}
 	return fmt.Sprintf("%v %ss", v, txt)
+}
+
+func daysInMonth(year int, m time.Month) int {
+	switch m {
+	case time.February:
+		d := time.Date(year, m, 1, 0, 0, 0, 0, time.UTC)
+		d = d.AddDate(0, 1, -1)
+		return d.Day()
+
+	case time.April, time.June, time.September, time.November:
+		return 30
+
+	default:
+		return 31
+	}
 }

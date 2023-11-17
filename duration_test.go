@@ -44,7 +44,7 @@ func TestDuration_add(t *testing.T) {
 			}
 			Y, M, _ := a.Date()
 			d := untilNewYear(a)
-			d.add(sinceNewYear(a), cal.Days(Y, M))
+			d.add(sinceNewYear(a), daysInMonth(Y, M))
 			got := d.String()
 			if got != c.e {
 				t.Log("got", got)
@@ -176,6 +176,13 @@ func TestBetween(t *testing.T) {
 			b: "2022-03-14 12:00:00",
 			s: "0y1m27d 0h0m0s",
 			l: "1 month 27 days",
+		},
+		{
+			t: "feb",
+			a: "2022-02-01 00:00:00",
+			b: "2024-03-01 00:00:00",
+			s: "2y1m0d 0h0m0s",
+			l: "2 years 1 month",
 		},
 	}
 	for _, c := range cases {
