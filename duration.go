@@ -44,14 +44,13 @@ func Between(a, b time.Time) Duration {
 	tmp := a
 	aDay := a.Day()
 	var monthDays int
-	i := int(b.Sub(tmp).Truncate(day) / day)
-	for {
+
+	for i := int(b.Sub(tmp).Truncate(day) / day); i > 0; i-- {
 		next := tmp.Add(day)
 		d := next.Day()
 		if d == 1 {
 			monthDays = tmp.Day()
 		}
-		i--
 		days++
 
 		if aDay == d || d == 1 && days > 28 {
@@ -62,9 +61,6 @@ func Between(a, b time.Time) Duration {
 		}
 		//log.Println("i", i, "days", days, "d", d)
 		tmp = next
-		if i == 0 {
-			break
-		}
 	}
 
 	d := Duration{years, months, days}
