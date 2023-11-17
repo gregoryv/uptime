@@ -44,7 +44,7 @@ func TestDuration_add(t *testing.T) {
 			}
 			Y, M, _ := a.Date()
 			d := untilNewYear(a)
-			d.add(sinceNewYear(a), daysInMonth(Y, M))
+			d = d.add(sinceNewYear(a), daysInMonth(Y, M))
 			got := d.String()
 			if got != c.e {
 				t.Log("got", got)

@@ -15,12 +15,12 @@ import (
 )
 
 // Since returns the duration between a and now.
-func Since(a time.Time) *Duration {
+func Since(a time.Time) Duration {
 	return Between(a, time.Now())
 }
 
 // Between returns the absolute duration between a and b.
-func Between(a, b time.Time) *Duration {
+func Between(a, b time.Time) Duration {
 	// a should always come before b
 	if b.Before(a) {
 		a, b = b, a
@@ -28,14 +28,14 @@ func Between(a, b time.Time) *Duration {
 	a = a.Truncate(time.Second)
 	b = b.Truncate(time.Second)
 	if a.Equal(b) {
-		return &Duration{}
+		return Duration{}
 	}
 
 	if years := b.Year() - a.Year(); years > 0 {
 		dur := untilNewYear(a)
 		Y, M, _ := a.Date()
-		dur.add(sinceNewYear(b), daysInMonth(Y, M))
-		dur.Years += years - 1
+		dur = dur.add(sinceNewYear(b), daysInMonth(Y, M))
+		dur[0] += years - 1
 		return dur
 	}
 
@@ -67,129 +67,138 @@ func Between(a, b time.Time) *Duration {
 		}
 	}
 
-	d := &Duration{
-		Years:  years,
-		Months: months,
-		Days:   days,
-	}
+	d := Duration{years, months, days}
 	s := b.Sub(tmp)
-	d.setHourMinSec(s)
+	d = d.setHourMinSec(s)
 	return d
 }
 
 const day = time.Hour * 24
 
 // untilNewYear returns duration before new years
-func untilNewYear(t time.Time) *Duration {
+func untilNewYear(t time.Time) Duration {
 	y, m, d := t.Date()
-	dur := &Duration{
-		Months: 12 - int(m),
-		Days:   daysInMonth(y, m) - d,
+	dur := Duration{
+		0,
+		12 - int(m),
+		daysInMonth(y, m) - d,
 	}
-	h, mm, s := t.Clock()	
+	h, mm, s := t.Clock()
 	hms := 24*time.Hour -
 		time.Duration(h)*time.Hour -
 		time.Duration(mm)*time.Minute -
 		time.Duration(s)*time.Second
-	dur.setHourMinSec(hms)
+	dur = dur.setHourMinSec(hms)
 	return dur
 }
 
 // sinceNewYear returns duration since new years
-func sinceNewYear(t time.Time) *Duration {
+func sinceNewYear(t time.Time) Duration {
 	_, m, d := t.Date()
 	h, mm, s := t.Clock()
-	return &Duration{
-		Months:  int(m) - 1,
-		Days:    d - 1,
-		Hours:   h,
-		Minutes: mm,
-		Seconds: s,
+	return Duration{
+		0,
+		int(m) - 1,
+		d - 1,
+		h,
+		mm,
+		s,
 	}
 }
 
 // Duration represents long duration. The duration is the total of all
 // fields combined.
-type Duration struct {
-	Years   int
-	Months  int
-	Days    int
-	Hours   int
-	Minutes int
-	Seconds int
-}
+type Duration [6]int
 
-func (d *Duration) setHourMinSec(s time.Duration) {
+const (
+	iYears = iota
+	iMonths
+	iDays
+	iHours
+	iMinutes
+	iSeconds
+)
+
+func (d Duration) Years() int   { return d[0] }
+func (d Duration) Months() int  { return d[1] }
+func (d Duration) Days() int    { return d[2] }
+func (d Duration) Hours() int   { return d[3] }
+func (d Duration) Minutes() int { return d[4] }
+func (d Duration) Seconds() int { return d[5] }
+
+func (d Duration) setHourMinSec(s time.Duration) Duration {
 	h := s.Truncate(time.Hour).Hours()
-	d.Hours = int(h)
+	d[iHours] = int(h)
 	m := time.Duration(s - s.Truncate(time.Hour)).Minutes()
-	d.Minutes = int(m)
+	d[iMinutes] = int(m)
 	sec := time.Duration(s - s.Truncate(time.Minute)).Seconds()
-	d.Seconds = int(sec)
+	d[iSeconds] = int(sec)
+	return d
 }
 
-func (d *Duration) add(v *Duration, monthDays int) {
-	d.Years += v.Years
-	d.Months += v.Months
-	d.Days += v.Days
-	d.Hours += v.Hours
-	d.Minutes += v.Minutes
-	d.Seconds += v.Seconds
+func (d Duration) add(v Duration, monthDays int) Duration {
+	d[iYears] += v[iYears]
+	d[iMonths] += v[iMonths]
+	d[iDays] += v[iDays]
+	d[iHours] += v[iHours]
+	d[iMinutes] += v[iMinutes]
+	d[iSeconds] += v[iSeconds]
 
-	if d.Seconds > 59 {
-		d.Minutes++
-		d.Seconds -= 60
+	if d[iSeconds] > 59 {
+		d[iMinutes]++
+		d[iSeconds] -= 60
 	}
-	if d.Minutes > 59 {
-		d.Hours++
-		d.Minutes -= 60
+	if d[iMinutes] > 59 {
+		d[iHours]++
+		d[iMinutes] -= 60
 	}
-	if d.Hours > 23 {
-		d.Days++
-		d.Hours -= 24
+	if d[iHours] > 23 {
+		d[iDays]++
+		d[iHours] -= 24
 	}
-	if d.Days >= monthDays {
-		d.Months++
-		d.Days -= monthDays
+	if d[iDays] >= monthDays {
+		d[iMonths]++
+		d[iDays] -= monthDays
 	}
-	if d.Months > 11 {
-		d.Years++
-		d.Months -= 12
+	if d[iMonths] > 11 {
+		d[iYears]++
+		d[iMonths] -= 12
 	}
+	return d
 }
 
 // Short returns an abbreviated duration representation.
-func (d *Duration) Short() string {
+func (d Duration) Short() string {
 	return fmt.Sprintf("%vy%vm%vd %vh%vm%vs",
-		d.Years,
-		d.Months,
-		d.Days,
-		d.Hours,
-		d.Minutes,
-		d.Seconds,
+		d[iYears],
+		d[iMonths],
+		d[iDays],
+		d[iHours],
+		d[iMinutes],
+		d[iSeconds],
 	)
 }
 
 // String returns the duration representation as named parts excluding
 // 0 values.
-func (d *Duration) String() string {
+func (d Duration) String() string {
 	var s []string
-	if v := d.Years; v > 0 {
+	if v := d.Years(); v > 0 {
 		s = append(s, plural(v, "year"))
 	}
-	if v := d.Months; v > 0 {
+	if v := d.Months(); v > 0 {
 		s = append(s, plural(v, "month"))
 	}
-	if v := d.Days; v > 0 {
+	if v := d.Days(); v > 0 {
 		s = append(s, plural(v, "day"))
 	}
-	if v := d.Hours; v > 0 {
+	if v := d.Hours(); v > 0 {
 		s = append(s, plural(v, "hour"))
 	}
-	if v := d.Minutes; v > 0 {
+	if v := d.Minutes(); v > 0 {
 		s = append(s, plural(v, "minute"))
 	}
-	if v := d.Seconds; v > 0 {
+	if v := d.Seconds(); v > 0 {
 		s = append(s, plural(v, "second"))
 	}
 	return strings.Join(s, " ")
