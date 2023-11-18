@@ -19,6 +19,34 @@ func Since(a time.Time) Duration {
 	return Between(a, time.Now())
 }
 
+// Parse period string "a to b", where format of b must match a. It is
+// ok for a and b to use only part of format as long as they are
+// equal.
+func Parse(format, period string) (Duration, error) {
+	a, b, err := parseTimes(format, period)
+	if err != nil {
+		return Duration{}, err
+	}
+	return Between(a, b), nil
+}
+
+func parseTimes(format, period string) (a, b time.Time, err error) {
+	sep := " to "
+	i := strings.Index(period, sep)
+	// left part dictates format
+	format = format[:i]
+
+	a, err = time.Parse(format, period[:i])
+	if err != nil {
+		return
+	}
+	b, err = time.Parse(format, period[i+len(sep):])
+	if err != nil {
+		return
+	}
+	return
+}
+
 // Between returns the absolute duration between a and b.
 func Between(a, b time.Time) Duration {
 	// a should always come before b

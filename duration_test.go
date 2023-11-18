@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
-	"os"
 	"strings"
 	"testing"
 	"time"
@@ -110,112 +109,99 @@ func TestsinceNewYear(t *testing.T) {
 	}
 }
 
-func TestBetween(t *testing.T) {
+func TestParse(t *testing.T) {
 	defer log.SetOutput(ioutil.Discard)
 	cases := []struct {
-		t string // text description
-		a string
-		b string
-		s string // short
-		l string // long
-		D bool   // debug
+		txt    string // text description
+		period string
+		exp    string // long
 	}{
 		{
-			t: "zero",
-			a: "2021-01-01 12:00:00",
-			b: "2021-01-01 12:00:00",
-			s: "0y0m0d 0h0m0s",
-			l: "",
+			txt:    "zero",
+			period: "2021-01-01 to 2021-01-01",
+			exp:    "",
 		},
 		{
-			t: "short",
-			a: "2021-01-01 12:00:00",
-			b: "2021-01-01 12:00:01",
-			s: "0y0m0d 0h0m1s",
-			l: "1 second",
+			txt:    "short",
+			period: "2021-01-01 12:00:00 to 2021-01-01 12:00:01",
+			exp:    "1 second",
 		},
 		{
-			t: "one day",
-			a: "2021-01-01 12:00:00",
-			b: "2021-01-02 12:00:00",
-			s: "0y0m1d 0h0m0s",
-			l: "1 day",
+			txt:    "one hour",
+			period: "2021-01-01 12 to 2021-01-01 13",
+			exp:    "1 hour",
 		},
 		{
-			t: "two days",
-			a: "2021-01-01 12:00:00",
-			b: "2021-01-03 12:00:00",
-			s: "0y0m2d 0h0m0s",
-			l: "2 days",
+			txt:    "one day",
+			period: "2021-01-01 to 2021-01-02",
+			exp:    "1 day",
 		},
 		{
-			t: "13 months",
-			a: "2021-01-01 12:00:00",
-			b: "2022-02-01 12:00:00",
-			s: "1y1m0d 0h0m0s",
-			l: "1 year 1 month",
+			txt:    "two days",
+			period: "2021-01-01 to 2021-01-03",
+			exp:    "2 days",
 		},
 		{
-			t: "jan to march",
-			a: "2022-01-30 12:00:00",
-			b: "2022-03-10 12:00:00",
-			s: "0y1m11d 0h0m0s",
-			l: "1 month 11 days",
+			txt:    "13 months",
+			period: "2021-01-01 to 2022-02-01",
+			exp:    "1 year 1 month",
 		},
 		{
-			t: "thousand years",
-			a: "1022-01-01 12:00:00",
-			b: "2022-01-01 12:00:00",
-			s: "1000y0m0d 0h0m0s",
-			l: "1000 years",
+			txt:    "jan to march",
+			period: "2022-01-30 to 2022-03-10",
+			exp:    "1 month 11 days",
 		},
 		{
-			t: "middle of month",
-			a: "2022-01-15 12:00:00",
-			b: "2022-03-15 12:00:00",
-			s: "0y2m0d 0h0m0s",
-			l: "2 months",
-			D: true,
+			txt:    "thousand years",
+			period: "1022-01-01 to 2022-01-01",
+			exp:    "1000 years",
 		},
 		{
-			t: "middle of month",
-			a: "2022-01-15 12:00:00",
-			b: "2022-03-14 12:00:00",
-			s: "0y1m27d 0h0m0s",
-			l: "1 month 27 days",
+			txt:    "middle of month",
+			period: "2022-01-15 to 2022-03-15",
+			exp:    "2 months",
 		},
 		{
-			t: "feb",
-			a: "2022-02-01 00:00:00",
-			b: "2024-03-01 00:00:00",
-			s: "2y1m0d 0h0m0s",
-			l: "2 years 1 month",
+			txt:    "middle of month",
+			period: "2022-01-15 to 2022-03-14",
+			exp:    "1 month 27 days",
+		},
+		{
+			txt:    "feb",
+			period: "2022-02-01 to 2024-03-01",
+			exp:    "2 years 1 month",
 		},
 	}
 	for _, c := range cases {
-		t.Run(c.t, func(t *testing.T) {
-			a, err := time.Parse("2006-01-02 15:04:05", c.a)
+		t.Run(c.txt, func(t *testing.T) {
+			format := "2006-01-02 15:04:05"
+			dur, err := Parse(format, c.period)
 			if err != nil {
 				t.Fatal(err)
 			}
-			b, err := time.Parse("2006-01-02 15:04:05", c.b)
-			if err != nil {
-				t.Fatal(err)
-			}
-			log.SetOutput(ioutil.Discard)
-			if c.D {
-				log.SetOutput(os.Stderr)
-			}
-			dur := Between(a, b)
-			if got := dur.Short(); got != c.s {
+			if got := dur.String(); got != c.exp {
 				t.Log("got", got)
-				t.Fatal("exp", c.s)
-			}
-			if got := dur.String(); got != c.l {
-				t.Log("got", got)
-				t.Fatal("exp", c.l)
+				t.Fatal("exp", c.exp)
 			}
 		})
+	}
+}
+
+func TestParse_errorsLeft(t *testing.T) {
+	format := "2006-01-02"
+	period := "2020/01/03 to 2022/01/03"
+	_, err := Parse(format, period)
+	if err == nil {
+		t.Fatalf("expect Parse error format %q period %q", format, period)
+	}
+}
+
+func TestParse_errorsRight(t *testing.T) {
+	format := "2006-01-02"
+	period := "2020-01-03 to 2022/01/03"
+	_, err := Parse(format, period)
+	if err == nil {
+		t.Fatalf("expect Parse error format %q period %q", format, period)
 	}
 }
 
