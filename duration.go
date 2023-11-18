@@ -143,11 +143,17 @@ const (
 	iSeconds
 )
 
+// Years returns years part of the duration
 func (d Duration) Years() int   { return d[0] }
+// Months returns months part of the duration
 func (d Duration) Months() int  { return d[1] }
+// Days returns days part of the duration
 func (d Duration) Days() int    { return d[2] }
+// Hour returns hour part of the duration
 func (d Duration) Hours() int   { return d[3] }
+// Minutes returns minutes part of the duration
 func (d Duration) Minutes() int { return d[4] }
+// Seconds returns seconds part of the duration
 func (d Duration) Seconds() int { return d[5] }
 
 func (d Duration) setHourMinSec(s time.Duration) Duration {
