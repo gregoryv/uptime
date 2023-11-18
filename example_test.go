@@ -67,7 +67,7 @@ func ExampleApproximate() {
 	dur := uptime.Approximate(timeDur)
 	fmt.Println(dur)
 	// output:
-	// 20 years 2 months 5 days 23 hours 10 minutes
+	// 20 years 2 months 23 hours 10 minutes
 }
 
 func ExampleApproximate_vsBetween() {
@@ -76,6 +76,6 @@ func ExampleApproximate_vsBetween() {
 	fmt.Println(uptime.Approximate(b.Sub(a)))
 	fmt.Println(uptime.Between(a, b))
 	// output:
-	// 201 years 3 months 24 days 4 hours
+	// 201 years 2 months 4 days 4 hours
 	// 201 years 2 months 6 days 4 hours
 }

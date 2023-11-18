@@ -22,12 +22,15 @@ const (
 )
 
 // Approximate converts the duration using fixed length for years and
-// months.
+// months. Every forth year is considered a leap year with 366 days.
 func Approximate(v time.Duration) Duration {
 	var d Duration
 	years := v.Truncate(ApproxYear)
 	d[iYears] = int(years / ApproxYear)
 	v -= years
+
+	// remove leap year days
+	v -= time.Duration(d[iYears]/4) * Day
 
 	months := v.Truncate(ApproxMonth)
 	d[iMonths] = int(months / ApproxMonth)
