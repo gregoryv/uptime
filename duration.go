@@ -21,27 +21,27 @@ const (
 	Day         = 24 * time.Hour
 )
 
-// Approximate converts the s duration using fixed length for years
-// and months.
-func Approximate(s time.Duration) Duration {
+// Approximate converts the duration using fixed length for years and
+// months.
+func Approximate(v time.Duration) Duration {
 	var d Duration
-	years := s.Truncate(ApproxYear)
+	years := v.Truncate(ApproxYear)
 	d[iYears] = int(years / ApproxYear)
-	s -= years
+	v -= years
 
-	months := s.Truncate(ApproxMonth)
+	months := v.Truncate(ApproxMonth)
 	d[iMonths] = int(months / ApproxMonth)
-	s -= months
+	v -= months
 
-	days := s.Truncate(Day)
+	days := v.Truncate(Day)
 	d[iDays] = int(days / Day)
-	s -= days
+	v -= days
 
-	h := s.Truncate(time.Hour).Hours()
+	h := v.Truncate(time.Hour).Hours()
 	d[iHours] = int(h)
-	m := time.Duration(s - s.Truncate(time.Hour)).Minutes()
+	m := time.Duration(v - v.Truncate(time.Hour)).Minutes()
 	d[iMinutes] = int(m)
-	sec := time.Duration(s - s.Truncate(time.Minute)).Seconds()
+	sec := time.Duration(v - v.Truncate(time.Minute)).Seconds()
 	d[iSeconds] = int(sec)
 	return d
 }
@@ -94,7 +94,7 @@ func Between(a, b time.Time) Duration {
 	if years := b.Year() - a.Year(); years > 0 {
 		dur := untilNewYear(a)
 		Y, M, _ := a.Date()
-		dur = dur.add(sinceNewYear(b), daysInMonth(Y, M))
+		dur = add(dur, sinceNewYear(b), daysInMonth(Y, M))
 		dur[0] += years - 1
 		return dur
 	}
@@ -191,17 +191,17 @@ func (d Duration) Minutes() int { return d[4] }
 // Seconds returns seconds part of the duration
 func (d Duration) Seconds() int { return d[5] }
 
-func (d Duration) setHourMinSec(s time.Duration) Duration {
-	h := s.Truncate(time.Hour).Hours()
+func (d Duration) setHourMinSec(v time.Duration) Duration {
+	h := v.Truncate(time.Hour).Hours()
 	d[iHours] = int(h)
-	m := time.Duration(s - s.Truncate(time.Hour)).Minutes()
+	m := time.Duration(v - v.Truncate(time.Hour)).Minutes()
 	d[iMinutes] = int(m)
-	sec := time.Duration(s - s.Truncate(time.Minute)).Seconds()
+	sec := time.Duration(v - v.Truncate(time.Minute)).Seconds()
 	d[iSeconds] = int(sec)
 	return d
 }
 
-func (d Duration) add(v Duration, monthDays int) Duration {
+func add(d, v Duration, monthDays int) Duration {
 	d[iYears] += v[iYears]
 	d[iMonths] += v[iMonths]
 	d[iDays] += v[iDays]
@@ -209,6 +209,12 @@ func (d Duration) add(v Duration, monthDays int) Duration {
 	d[iMinutes] += v[iMinutes]
 	d[iSeconds] += v[iSeconds]
 
+	return shift(d, monthDays)
+}
+
+// shift moves seconds to minutes, minutes to hours and so on if
+// possible.
+func shift(d Duration, monthDays int) Duration {
 	if d[iSeconds] > 59 {
 		d[iMinutes]++
 		d[iSeconds] -= 60
