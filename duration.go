@@ -14,6 +14,38 @@ import (
 	"time"
 )
 
+// Used by [Approximate]
+const (
+	ApproxYear  = 365 * Day
+	ApproxMonth = 30 * Day
+	Day         = 24 * time.Hour
+)
+
+// Approximate converts the s duration using fixed length for years
+// and months.
+func Approximate(s time.Duration) Duration {
+	var d Duration
+	years := s.Truncate(ApproxYear)
+	d[iYears] = int(years / ApproxYear)
+	s -= years
+
+	months := s.Truncate(ApproxMonth)
+	d[iMonths] = int(months / ApproxMonth)
+	s -= months
+
+	days := s.Truncate(Day)
+	d[iDays] = int(days / Day)
+	s -= days
+
+	h := s.Truncate(time.Hour).Hours()
+	d[iHours] = int(h)
+	m := time.Duration(s - s.Truncate(time.Hour)).Minutes()
+	d[iMinutes] = int(m)
+	sec := time.Duration(s - s.Truncate(time.Minute)).Seconds()
+	d[iSeconds] = int(sec)
+	return d
+}
+
 // Since returns the duration between a and now.
 func Since(a time.Time) Duration {
 	return Between(a, time.Now())
@@ -73,8 +105,8 @@ func Between(a, b time.Time) Duration {
 	aDay := a.Day()
 	var monthDays int
 
-	for i := int(b.Sub(tmp).Truncate(day) / day); i > 0; i-- {
-		next := tmp.Add(day)
+	for i := int(b.Sub(tmp).Truncate(Day) / Day); i > 0; i-- {
+		next := tmp.Add(Day)
 		d := next.Day()
 		if d == 1 {
 			monthDays = tmp.Day()
@@ -96,8 +128,6 @@ func Between(a, b time.Time) Duration {
 	d = d.setHourMinSec(s)
 	return d
 }
-
-const day = time.Hour * 24
 
 // untilNewYear returns duration before new years
 func untilNewYear(t time.Time) Duration {
@@ -144,15 +174,20 @@ const (
 )
 
 // Years returns years part of the duration
-func (d Duration) Years() int   { return d[0] }
+func (d Duration) Years() int { return d[0] }
+
 // Months returns months part of the duration
-func (d Duration) Months() int  { return d[1] }
+func (d Duration) Months() int { return d[1] }
+
 // Days returns days part of the duration
-func (d Duration) Days() int    { return d[2] }
+func (d Duration) Days() int { return d[2] }
+
 // Hour returns hour part of the duration
-func (d Duration) Hours() int   { return d[3] }
+func (d Duration) Hours() int { return d[3] }
+
 // Minutes returns minutes part of the duration
 func (d Duration) Minutes() int { return d[4] }
+
 // Seconds returns seconds part of the duration
 func (d Duration) Seconds() int { return d[5] }
 

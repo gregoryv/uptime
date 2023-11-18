@@ -56,3 +56,26 @@ func ExampleBetween_january() {
 	// output:
 	// 1 month 11 days
 }
+
+func ExampleApproximate() {
+	day := 24 * time.Hour
+	timeDur := 20*365*day + // approximate year length is 365 days
+		2*30*day + // approximate month length is 30 days
+		5*day +
+		23*time.Hour +
+		10*time.Minute
+	dur := uptime.Approximate(timeDur)
+	fmt.Println(dur)
+	// output:
+	// 20 years 2 months 5 days 23 hours 10 minutes
+}
+
+func ExampleApproximate_vsBetween() {
+	a := time.Date(1821, 1, 01, 12, 00, 00, 0, time.UTC)
+	b := time.Date(2022, 3, 07, 16, 00, 00, 0, time.UTC)
+	fmt.Println(uptime.Approximate(b.Sub(a)))
+	fmt.Println(uptime.Between(a, b))
+	// output:
+	// 201 years 3 months 24 days 4 hours
+	// 201 years 2 months 6 days 4 hours
+}
