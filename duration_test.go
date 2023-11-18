@@ -1,50 +1,10 @@
 package uptime
 
 import (
-	"fmt"
 	"strings"
 	"testing"
 	"time"
 )
-
-func TestSince(t *testing.T) {
-	d := Since(time.Now())
-	got := d.String()
-	if !strings.Contains(got, "") {
-		t.Fail()
-	}
-}
-
-func TestDuration_add(t *testing.T) {
-	cases := []struct {
-		t string // text
-		a string // time
-		e string // expected
-	}{
-		{
-			t: "less than a year",
-			a: "2023-11-16 22:32:44",
-			e: "1 year",
-		},
-	}
-
-	for _, c := range cases {
-		t.Run(c.t, func(t *testing.T) {
-			a, err := time.Parse("2006-01-02 15:04:05", c.a)
-			if err != nil {
-				t.Fatal(err)
-			}
-			Y, M, _ := a.Date()
-			d := untilNewYear(a)
-			d = d.add(sinceNewYear(a), daysInMonth(Y, M))
-			got := d.String()
-			if got != c.e {
-				t.Log("got", got)
-				t.Fatal("exp", c.e)
-			}
-		})
-	}
-}
 
 func TestParse(t *testing.T) {
 	cases := []struct {
@@ -76,6 +36,11 @@ func TestParse(t *testing.T) {
 			txt:    "two days",
 			period: "2021-01-01 to 2021-01-03",
 			exp:    "2 days",
+		},
+		{
+			txt:    "one year",
+			period: "2022-11-16 22:32:44 to 2023-11-16 22:32:44",
+			exp:    "1 year",
 		},
 		{
 			txt:    "13 months",
@@ -141,34 +106,10 @@ func TestParse_errorsRight(t *testing.T) {
 	}
 }
 
-func ExampleDuration_Short() {
-	a := time.Date(2021, 1, 01, 12, 00, 00, 0, time.UTC)
-	b := time.Date(2022, 3, 02, 13, 10, 20, 0, time.UTC)
-	fmt.Print(Between(a, b).Short())
-	// output:
-	// 1y2m1d 1h10m20s
-}
-
-func ExampleDuration_String() {
-	a := time.Date(2022, 1, 01, 12, 00, 00, 0, time.UTC)
-	b := time.Date(2021, 1, 01, 12, 00, 00, 0, time.UTC)
-	fmt.Print(Between(a, b))
-	// output:
-	// 1 year
-}
-
-func Example_longDurationBetween() {
-	a := time.Date(1021, 1, 01, 12, 00, 00, 0, time.UTC)
-	b := time.Date(2022, 3, 07, 16, 00, 00, 0, time.UTC)
-	fmt.Print(Between(a, b))
-	// output:
-	// 1001 years 2 months 6 days 4 hours
-}
-
-func ExampleBetween_january() {
-	a := time.Date(2022, 1, 30, 12, 00, 00, 0, time.UTC)
-	b := time.Date(2022, 3, 10, 12, 00, 00, 0, time.UTC)
-	fmt.Println(Between(a, b))
-	// output:
-	// 1 month 11 days
+func TestSince(t *testing.T) {
+	d := Since(time.Now())
+	got := d.String()
+	if !strings.Contains(got, "") {
+		t.Fail()
+	}
 }

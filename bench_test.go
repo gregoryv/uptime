@@ -20,3 +20,11 @@ func Benchmark_Between_thousand_years(b *testing.B) {
 		Between(start, now)
 	}
 }
+
+func Benchmark_Parse_thousand_years(b *testing.B) {
+	format := "2006-01-02 15:04:05"
+	period := "1021-01-01 to 2021-01-02"
+	for i := 0; i < b.N; i++ {
+		Parse(format, period)
+	}
+}
